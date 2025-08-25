@@ -5,6 +5,7 @@ $fa = 1;
 $fs = 0.3;
 
 /* [ Grid Settings ] */
+// X, Y, Z. Set Z=0 for min plate height
 Pitch = [42, 42, 7];
 
 $pitch = Pitch;

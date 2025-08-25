@@ -2,13 +2,14 @@ outer_radius = 4;
 top_bevel_height = 2.15;
 shelf_height = 1.8;
 bottom_bevel_height = 0.7;
-min_height = top_bevel_height + shelf_height + bottom_bevel_height;
 
 shelf_radius = outer_radius - top_bevel_height;
 bottom_radius = outer_radius - (top_bevel_height + bottom_bevel_height);
-
 side_length = $pitch[0];
-plate_height = $pitch[2];  // TODO: adjust plate height to be at least min_height
+
+min_height = top_bevel_height + shelf_height + bottom_bevel_height - 0.005;
+function get_plate_height() = $pitch.z < min_height ? min_height : $pitch.z;
+plate_height = get_plate_height();
 
 module baseplate_cell() {
     difference() {
@@ -18,20 +19,17 @@ module baseplate_cell() {
 }
 
 module outer_profile() {
-    // TODO: put the corners back in and create a rounded mask for the full plate
     translate([0,0, plate_height/2])
-    hull()
-    cornercopy(d=outer_radius)
-    cylinder(h=plate_height, r=outer_radius, center=true);
+    cube([$pitch.x, $pitch.y, plate_height], center=true);
 }
 
 module cavity() {
     union() {
         hull() {
             // extend top to avoid z fighting
-            translate([0,0, plate_height]) outer_profile();
+            translate([0,0, plate_height]) cap();
 
-            // first lip
+            // top bevel
             translate([0, 0, plate_height-top_bevel_height]) top_bevel();
         }
 
@@ -39,10 +37,17 @@ module cavity() {
             // shelf
             translate([0, 0, plate_height-top_bevel_height-shelf_height]) shelf();
 
-            // second lip
+            // bottom bevel
             translate([0, 0, plate_height-top_bevel_height-shelf_height-bottom_bevel_height]) bottom_bevel();
         }
     }
+}
+
+module cap() {
+    translate([0, 0, plate_height/2])
+    hull()
+    cornercopy(d=outer_radius)
+    cylinder(h=0.005, r=outer_radius, center=true);
 }
 
 module top_bevel() {
@@ -57,7 +62,6 @@ module shelf() {
     cylinder(h=plate_height/2, r=shelf_radius);
 }
 
-
 module bottom_bevel() {
     hull()
     cornercopy(d = outer_radius)
@@ -66,8 +70,8 @@ module bottom_bevel() {
 
 module cornercopy(d) {
     for (xx=[-1, 1], yy=[-1, 1]) {
-        xpos = xx * (side_length/2 - d);
-        ypos = yy * (side_length/2 - d);
+        xpos = xx * ($pitch.x/2 - d);
+        ypos = yy * ($pitch.y/2 - d);
         // echo(xpos, ypos);
         translate([xpos, ypos, 0]) children();
     }
