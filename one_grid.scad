@@ -1,11 +1,11 @@
 outer_radius = 4;
-first_lip_height = 2.15;
+top_bevel_height = 2.15;
 shelf_height = 1.8;
-second_lip_height = 0.7;
-min_height = first_lip_height + shelf_height + second_lip_height;
+bottom_bevel_height = 0.7;
+min_height = top_bevel_height + shelf_height + bottom_bevel_height;
 
-shelf_radius = outer_radius - first_lip_height;
-bottom_radius = outer_radius - (first_lip_height + second_lip_height);
+shelf_radius = outer_radius - top_bevel_height;
+bottom_radius = outer_radius - (top_bevel_height + bottom_bevel_height);
 
 side_length = $pitch[0];
 plate_height = $pitch[2];  // TODO: adjust plate height to be at least min_height
@@ -13,7 +13,7 @@ plate_height = $pitch[2];  // TODO: adjust plate height to be at least min_heigh
 module baseplate_cell() {
     difference() {
         outer_profile();
-        cutout();
+        cavity();
     }
 }
 
@@ -25,30 +25,30 @@ module outer_profile() {
     cylinder(h=plate_height, r=outer_radius, center=true);
 }
 
-module cutout() {
+module cavity() {
     union() {
         hull() {
             // extend top to avoid z fighting
             translate([0,0, plate_height]) outer_profile();
 
             // first lip
-            translate([0, 0, plate_height-first_lip_height]) first_lip();
+            translate([0, 0, plate_height-top_bevel_height]) top_bevel();
         }
 
         hull() {
             // shelf
-            translate([0, 0, plate_height-first_lip_height-shelf_height]) shelf();
+            translate([0, 0, plate_height-top_bevel_height-shelf_height]) shelf();
 
             // second lip
-            translate([0, 0, plate_height-first_lip_height-shelf_height-second_lip_height]) second_lip();
+            translate([0, 0, plate_height-top_bevel_height-shelf_height-bottom_bevel_height]) bottom_bevel();
         }
     }
 }
 
-module first_lip() {
+module top_bevel() {
     hull()
     cornercopy(d = outer_radius)
-    cylinder(r1=shelf_radius, r2=outer_radius, h=first_lip_height);
+    cylinder(r1=shelf_radius, r2=outer_radius, h=top_bevel_height);
 }
 
 module shelf() {
@@ -58,10 +58,10 @@ module shelf() {
 }
 
 
-module second_lip() {
+module bottom_bevel() {
     hull()
     cornercopy(d = outer_radius)
-    cylinder(r1=bottom_radius, r2=shelf_radius, h=second_lip_height);
+    cylinder(r1=bottom_radius, r2=shelf_radius, h=bottom_bevel_height);
 }
 
 module cornercopy(d) {
