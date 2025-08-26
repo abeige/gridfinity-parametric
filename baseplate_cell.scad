@@ -5,13 +5,13 @@ bottom_bevel_height = 0.7;
 
 shelf_radius = outer_radius - top_bevel_height;
 bottom_radius = outer_radius - (top_bevel_height + bottom_bevel_height);
-side_length = $pitch[0];
 
 min_height = top_bevel_height + shelf_height + bottom_bevel_height - 0.005;
 function get_plate_height() = $pitch.z < min_height ? min_height : $pitch.z;
 plate_height = get_plate_height();
 
 module baseplate_cell() {
+    translate([$pitch.x/2, $pitch.y/2, 0])
     difference() {
         outer_profile();
         cavity();
