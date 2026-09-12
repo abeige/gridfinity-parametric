@@ -14,7 +14,10 @@ module baseplate_cell() {
     translate([$pitch.x/2, $pitch.y/2, 0])
     difference() {
         outer_profile();
-        cavity();
+        union() {
+            cavity();
+            cell_cap(1);
+        }
     }
 }
 
@@ -27,7 +30,7 @@ module cavity() {
     union() {
         hull() {
             // extend top to avoid z fighting
-            translate([0,0, plate_height]) cap();
+            translate([0,0, plate_height]) cavity_cap();
 
             // top bevel
             translate([0, 0, plate_height-top_bevel_height]) top_bevel();
@@ -43,7 +46,7 @@ module cavity() {
     }
 }
 
-module cap() {
+module cavity_cap() {
     translate([0, 0, plate_height/2])
     hull()
     cornercopy(d=outer_radius)
@@ -66,6 +69,11 @@ module bottom_bevel() {
     hull()
     cornercopy(d = outer_radius)
     cylinder(r1=bottom_radius, r2=shelf_radius, h=bottom_bevel_height);
+}
+
+module cell_cap(h) {
+    translate([0, 0, h/2 + plate_height - h])
+    cube([$pitch.x + 0.01, $pitch.y + 0.01, h+0.01], center=true);
 }
 
 module cornercopy(d) {

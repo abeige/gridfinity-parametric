@@ -1,6 +1,7 @@
 use <./baseplate.scad>
 
-/* [ Global Variables ] */
+
+/* [ Render Settings ] */
 
 $fa = 1;
 $fs = 0.3;
@@ -9,7 +10,7 @@ $fs = 0.3;
 /* [ Grid Settings ] */
 
 // X, Y, Z. Set Z=0 for min plate height
-Pitch = [42, 42, 7];
+Pitch = [42, 42, 0];
 
 
 /* [ Baseplate Settings ] */
@@ -28,7 +29,9 @@ Minimum_Y_width = 0;
 // Maximum Y dimension in mm (0 for no limit)
 Maximum_Y_width = 0;
 
+
 /* [ Set Globals ] */
+
 $pitch = Pitch;
 $cells_x = Cells_X;
 $min_x = Minimum_X_width;
